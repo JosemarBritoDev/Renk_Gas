@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro Entregador - Renk Gás</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col justify-between">
+
+    <header class="bg-gray-800 border-b border-gray-700 py-4 text-center">
+        <h1 class="text-2xl font-bold text-amber-500">Renk Gás - Área do Entregador</h1>
+        <p class="text-sm text-gray-400">Cadastre-se para realizar entregas na região</p>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-700">
+            <h2 class="text-xl font-bold text-white mb-2 text-center">Novo Entregador</h2>
+            <p class="text-xs text-amber-400 text-center mb-6">Nota: Seu acesso requer aprovação manual do Gestor.</p>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <p class="text-red-400 text-xs mt-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded transition duration-200 mt-4">
+                    Solicitar Cadastro
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 border-t border-gray-700 py-3 text-center text-xs text-gray-400">
+        Desenvolvido por Brito's Code Tecnologia | (11) 97264-6617
+    </footer>
+
+</body>
+</html>

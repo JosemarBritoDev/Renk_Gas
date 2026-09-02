@@ -71,3 +71,10 @@ class TesteViewCadastroCliente(TestCase):
         response = self.client.get(reverse('cadastro_cliente'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'accounts/cadastro_cliente.html')
+
+class TesteLogin(TestCase):
+
+    def test_status_code_login(self):
+        response = self.client.get(reverse('login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/login.html')
