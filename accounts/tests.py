@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-
+from accounts.forms import CadastroClienteForm, CadastroEntregadorForm
 User = get_user_model()
 
 class TesteModeloUsuario(TestCase):
@@ -26,3 +26,37 @@ class TesteModeloUsuario(TestCase):
         )
         self.assertEqual(entregador.role, User.Perfil.ENTREGADOR)
         self.assertFalse(entregador.aprovado)  # Entregador depende da aprovação do Renato
+
+        
+
+class TesteFormulariosCadastro(TestCase):
+
+    def test_form_cadastro_cliente_valido(self):
+        dados = {
+            "username": "clienteform",
+            "first_name": "Cliente Teste",
+            "email": "cliente@email.com",
+            "telefone": "11988887777",
+            "password1": "SenhaForte123!",
+            "password2": "SenhaForte123!"
+        }
+        form = CadastroClienteForm(data=dados)
+        self.assertTrue(form.is_valid())
+        usuario = form.save()
+        self.assertEqual(usuario.role, User.Perfil.CLIENTE)
+        self.assertTrue(usuario.aprovado)
+
+    def test_form_cadastro_entregador_pendente(self):
+        dados = {
+            "username": "entregadorform",
+            "first_name": "Entregador Teste",
+            "email": "entregador@email.com",
+            "telefone": "11977776666",
+            "password1": "SenhaForte123!",
+            "password2": "SenhaForte123!"
+        }
+        form = CadastroEntregadorForm(data=dados)
+        self.assertTrue(form.is_valid())
+        usuario = form.save()
+        self.assertEqual(usuario.role, User.Perfil.ENTREGADOR)
+        self.assertFalse(usuario.aprovado)
