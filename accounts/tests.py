@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from accounts.forms import CadastroClienteForm, CadastroEntregadorForm
+from django.urls import reverse
+
 User = get_user_model()
 
 class TesteModeloUsuario(TestCase):
@@ -60,3 +62,12 @@ class TesteFormulariosCadastro(TestCase):
         usuario = form.save()
         self.assertEqual(usuario.role, User.Perfil.ENTREGADOR)
         self.assertFalse(usuario.aprovado)
+
+
+class TesteViewCadastroCliente(TestCase):
+
+    def test_status_code_cadastro_cliente(self):
+        """ Testa se a página de cadastro carrega com sucesso """
+        response = self.client.get(reverse('cadastro_cliente'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/cadastro_cliente.html')
