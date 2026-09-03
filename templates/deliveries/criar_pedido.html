@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Pedido - Renk Gás{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md border border-gray-100">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Fazer Novo Pedido</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mb-4 p-4 text-sm rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Produto</label>
+            <select name="produto" required class="w-full border-gray-300 rounded-lg p-2.5 border">
+                {% for produto in produtos %}
+                    <option value="{{ produto.id }}">{{ produto.nome }} - R$ {{ produto.preco }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+            <select name="bairro" required class="w-full border-gray-300 rounded-lg p-2.5 border">
+                {% for bairro in bairros %}
+                    <option value="{{ bairro.id }}">{{ bairro.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+            <input type="number" name="quantidade" value="1" min="1" required class="w-full border-gray-300 rounded-lg p-2.5 border">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Endereço de Entrega</label>
+            <input type="text" name="endereco_entrega" required placeholder="Rua, Número, Complemento" class="w-full border-gray-300 rounded-lg p-2.5 border">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
+            <select name="forma_pagamento" required class="w-full border-gray-300 rounded-lg p-2.5 border">
+                <option value="PIX">PIX</option>
+                <option value="CARTAO">Cartão na Entrega</option>
+                <option value="DINHEIRO">Dinheiro</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Observações (opcional)</label>
+            <textarea name="observacoes" rows="2" class="w-full border-gray-300 rounded-lg p-2.5 border"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition">
+            Confirmar Pedido
+        </button>
+    </form>
+</div>
+{% endblock %}

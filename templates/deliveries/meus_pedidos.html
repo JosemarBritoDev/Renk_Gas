@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Meus Pedidos - Renk Gás{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Meus Pedidos</h1>
+        <a href="{% url 'deliveries:criar_pedido' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
+            + Novo Pedido
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mb-4 p-4 text-sm rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if pedidos %}
+        <div class="space-y-4">
+            {% for pedido in pedidos %}
+                <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-lg text-gray-900">Pedido #{{ pedido.id }}</span>
+                            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full
+                                {% if pedido.status == 'PENDENTE' %}bg-yellow-100 text-yellow-800
+                                {% elif pedido.status == 'EM_ROTA' %}bg-blue-100 text-blue-800
+                                {% elif pedido.status == 'ENTREGUE' %}bg-green-100 text-green-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ pedido.get_status_display }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">
+                            <strong>Item:</strong> {{ pedido.quantidade }}x {{ pedido.produto.nome }} (R$ {{ pedido.produto.preco }})
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <strong>Entrega:</strong> {{ pedido.endereco_entrega }} - {{ pedido.bairro.nome }}
+                        </p>
+                        <p class="text-xs text-gray-400 mt-2">
+                            Realizado em: {{ pedido.criado_em|date:"d/m/Y H:i" }} | Pagamento: {{ pedido.get_forma_pagamento_display }}
+                        </p>
+                    </div>
+
+                    <div class="text-right sm:border-l sm:pl-6 border-gray-100">
+                        <span class="block text-xs text-gray-400 uppercase font-semibold">Total</span>
+                        <span class="text-xl font-bold text-gray-900">
+                            R$ {% widthratio pedido.produto.preco 1 pedido.quantidade %}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-semibold text-gray-900">Nenhum pedido realizado</h3>
+            <p class="mt-1 text-sm text-gray-500">Você ainda não solicitou nenhum gás ou produto.</p>
+            <div class="mt-6">
+                <a href="{% url 'deliveries:criar_pedido' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    Fazer Primeiro Pedido
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
