@@ -1,61 +1,49 @@
 from django.db import models
 from django.conf import settings
+from products.models import Produto
 
 class Bairro(models.Model):
-    nome = models.CharField("Nome do Bairro", max_length=100, unique=True)
-    ativo = models.BooleanField("Ativo para Entregas", default=True)
-
-    class Meta:
-        verbose_name = "Bairro"
-        verbose_name_plural = "Bairros"
-        ordering = ["nome"]
+    nome = models.CharField(max_length=100, unique=True)
+    ativo = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nome
 
-
 class Pedido(models.Model):
-    FORMAS_PAGAMENTO = [
-        ("PIX", "PIX"),
-        ("CARTAO_DEBITO", "Cartão de Débito"),
-        ("CARTAO_CREDITO", "Cartão de Crédito"),
-        ("DINHEIRO", "Dinheiro"),
+    STATUS_CHOICES = [
+        ('PENDENTE', 'Pendente'),
+        ('EM_ROTA', 'Em Rota'),
+        ('ENTREGUE', 'Entregue'),
+        ('CANCELADO', 'Cancelado'),
     ]
 
-    STATUS_CHOICES = [
-        ("PENDENTE", "Pendente"),
-        ("EM_ROTA", "Em Rota"),
-        ("ENTREGUE", "Entregue"),
-        ("CANCELADO", "Cancelado"),
+    PAGAMENTO_CHOICES = [
+        ('PIX', 'PIX'),
+        ('CARTAO', 'Cartão na Entrega'),
+        ('DINHEIRO', 'Dinheiro'),
     ]
 
     cliente = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
-        related_name="pedidos"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='pedidos_cliente'
     )
     entregador = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, 
-        related_name="entregas"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='pedidos_entregador'
     )
-    produto = models.ForeignKey(
-        'products.Produto', 
-        on_delete=models.PROTECT
-    )
+    produto = models.ForeignKey(Produto, on_delete=models.PROTECT)
+    bairro = models.ForeignKey(Bairro, on_delete=models.PROTECT)
     quantidade = models.PositiveIntegerField(default=1)
-    bairro = models.ForeignKey(
-        Bairro, 
-        on_delete=models.PROTECT, 
-        verbose_name="Bairro de Entrega"
-    )
-    endereco_entrega = models.CharField("Endereço de Entrega", max_length=255)
-    forma_pagamento = models.CharField("Forma de Pagamento", max_length=20, choices=FORMAS_PAGAMENTO)
-    observacoes = models.TextField("Observações", blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDENTE")
+    endereco_entrega = models.CharField(max_length=255)
+    forma_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES)
+    observacoes = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDENTE')
     criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Pedido #{self.id} - {self.cliente.username} ({self.bairro.nome})"
+        return f"Pedido #{self.id} - {self.cliente.username} ({self.status})"

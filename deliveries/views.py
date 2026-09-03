@@ -56,3 +56,33 @@ def meus_pedidos_view(request):
     """Exibe o histórico de pedidos do cliente logado."""
     pedidos = Pedido.objects.filter(cliente=request.user).select_related('produto', 'bairro').order_by('-criado_em')
     return render(request, "deliveries/meus_pedidos.html", {"pedidos": pedidos})
+
+@login_required
+def painel_entregador_view(request):
+    """Exibe o painel de entregas pendentes e em rota para o entregador."""
+    pedidos_pendentes = Pedido.objects.filter(status='PENDENTE').select_related('cliente', 'produto', 'bairro').order_by('criado_em')
+    meus_pedidos_em_rota = Pedido.objects.filter(entregador=request.user, status='EM_ROTA').select_related('cliente', 'produto', 'bairro').order_by('criado_em')
+
+    return render(request, "deliveries/painel_entregador.html", {
+        "pedidos_pendentes": pedidos_pendentes,
+        "meus_pedidos_em_rota": meus_pedidos_em_rota,
+    })
+
+@login_required
+def atualizar_status_pedido_view(request, pedido_id, novo_status):
+    """Atualiza o status do pedido (muda para EM_ROTA ou ENTREGUE)."""
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+
+    if novo_status == 'EM_ROTA' and pedido.status == 'PENDENTE':
+        pedido.status = 'EM_ROTA'
+        pedido.entregador = request.user
+        pedido.save()
+        messages.success(request, f"Você assumiu a entrega do Pedido #{pedido.id}!")
+    elif novo_status == 'ENTREGUE' and pedido.status == 'EM_ROTA':
+        pedido.status = 'ENTREGUE'
+        pedido.save()
+        messages.success(request, f"Pedido #{pedido.id} marcado como ENTREGUE!")
+    else:
+        messages.error(request, "Ação de alteração de status inválida.")
+
+    return redirect("deliveries:painel_entregador")
