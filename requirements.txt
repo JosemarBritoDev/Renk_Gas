@@ -1,6 +1,6 @@
 asgiref==3.12.1
 dj-database-url==3.1.2
-Django==6.1
+Django==5.0.3
 django-unfold==0.104.1
 gunicorn==26.2.0
 psycopg2-binary==2.9.12
