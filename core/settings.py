@@ -23,9 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-050sv)&s4sp467h2r@7scuy5lm=9_ncor_w-a4i9^j8id$lnc=')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,*').split(',')
+# Ajuste seguro para aceitar localhost e qualquer subdomínio do Render
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv(
+        'ALLOWED_HOSTS', 
+        'localhost, 127.0.0.1, .onrender.com'
+    ).split(',') if host.strip()
+]
 
 
 # Application definition
@@ -173,3 +180,5 @@ UNFOLD = {
         },
     },
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
