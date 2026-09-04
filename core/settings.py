@@ -86,12 +86,17 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Configura dinamicamente PostgreSQL em produção e SQLite local via .env
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
         conn_max_age=600,
         conn_health_checks=True,
-        ssl_require=True if os.getenv('DATABASE_URL') else False,
     )
 }
+
+# Configura o SSL diretamente para o driver PostgreSQL do Render
+if os.getenv('DATABASE_URL'):
+    DATABASES['default']['OPTIONS'] = {
+        'sslmode': 'require',
+    }
 
 
 # Password validation
