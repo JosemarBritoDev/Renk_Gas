@@ -7,6 +7,7 @@ User = get_user_model()
 # Classe base para aplicar o visual escuro do Tailwind em todos os inputs
 CLASSES_INPUT = "w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:border-purple-500"
 
+
 class CadastroClienteForm(UserCreationForm):
     telefone = forms.CharField(
         label="Telefone / WhatsApp",
@@ -17,9 +18,14 @@ class CadastroClienteForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ("username", "first_name", "email", "telefone")
+        labels = {
+            "username": "Nome de Usuário (login)",
+            "first_name": "Nome Completo",
+            "email": "E-mail",
+        }
         widgets = {
-            "username": forms.TextInput(attrs={"class": CLASSES_INPUT, "placeholder": "Digite seu usuário"}),
-            "first_name": forms.TextInput(attrs={"class": CLASSES_INPUT, "placeholder": "Seu nome completo"}),
+            "username": forms.TextInput(attrs={"class": CLASSES_INPUT, "placeholder": "ex: joaoalves"}),
+            "first_name": forms.TextInput(attrs={"class": CLASSES_INPUT, "placeholder": "JOAO ALVES"}),
             "email": forms.EmailInput(attrs={"class": CLASSES_INPUT, "placeholder": "seu@email.com"}),
         }
 
@@ -30,6 +36,12 @@ class CadastroClienteForm(UserCreationForm):
             self.fields["password1"].widget.attrs["class"] = CLASSES_INPUT
         if "password2" in self.fields:
             self.fields["password2"].widget.attrs["class"] = CLASSES_INPUT
+
+    def clean_username(self):
+        # Trata o username caso o usuário digite espaços acidentalmente no login
+        username = self.cleaned_data.get("username", "").strip()
+        username_limpo = username.lower().replace(" ", "-")
+        return username_limpo
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -50,9 +62,14 @@ class CadastroEntregadorForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ("username", "first_name", "email", "telefone")
+        labels = {
+            "username": "Nome de Usuário (login)",
+            "first_name": "Nome Completo",
+            "email": "E-mail",
+        }
         widgets = {
-            "username": forms.TextInput(attrs={"class": CLASSES_INPUT, "placeholder": "Digite seu usuário"}),
-            "first_name": forms.TextInput(attrs={"class": CLASSES_INPUT, "placeholder": "Seu nome completo"}),
+            "username": forms.TextInput(attrs={"class": CLASSES_INPUT, "placeholder": "ex: joaoalves"}),
+            "first_name": forms.TextInput(attrs={"class": CLASSES_INPUT, "placeholder": "JOAO ALVES"}),
             "email": forms.EmailInput(attrs={"class": CLASSES_INPUT, "placeholder": "seu@email.com"}),
         }
 
@@ -62,6 +79,11 @@ class CadastroEntregadorForm(UserCreationForm):
             self.fields["password1"].widget.attrs["class"] = CLASSES_INPUT
         if "password2" in self.fields:
             self.fields["password2"].widget.attrs["class"] = CLASSES_INPUT
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username", "").strip()
+        username_limpo = username.lower().replace(" ", "-")
+        return username_limpo
 
     def save(self, commit=True):
         user = super().save(commit=False)
