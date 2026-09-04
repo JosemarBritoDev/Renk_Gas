@@ -89,7 +89,6 @@ DATABASES = {
         default=os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
         conn_max_age=600,
         conn_health_checks=True,
-        ssl_require=True if os.getenv('DATABASE_URL') else False,  # Força SSL em produção
     )
 }
 
